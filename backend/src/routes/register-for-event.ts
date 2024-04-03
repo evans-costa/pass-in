@@ -2,6 +2,7 @@ import { FastifyInstance } from "fastify";
 import { ZodTypeProvider } from "fastify-type-provider-zod";
 import { z } from "zod";
 import { prisma } from "../lib/prisma";
+import { generateNanoId } from "../utils/generate-nanoid";
 
 export async function registerForEvent(app: FastifyInstance) {
   app.withTypeProvider<ZodTypeProvider>().post(
@@ -17,7 +18,10 @@ export async function registerForEvent(app: FastifyInstance) {
         }),
         response: {
           201: z.object({
-            attendeeId: z.number(),
+            attendee: z.object({
+              id: z.number(),
+              ticketId: z.string().max(10),
+            }),
           }),
         },
       },
@@ -57,15 +61,23 @@ export async function registerForEvent(app: FastifyInstance) {
         throw new Error("The maximum attendees for this event is already reached.");
       }
 
+      const ticketId = generateNanoId();
+
       const attendee = await prisma.attendee.create({
         data: {
           name,
           email,
           eventId,
+          ticketId,
         },
       });
 
-      return reply.status(201).send({ attendeeId: attendee.id });
+      return reply.status(201).send({
+        attendee: {
+          id: attendee.id,
+          ticketId: attendee.ticketId,
+        },
+      });
     }
   );
 }
