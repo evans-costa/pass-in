@@ -20,7 +20,7 @@ export async function registerForEvent(app: FastifyInstance) {
           201: z.object({
             attendee: z.object({
               id: z.number(),
-              ticketId: z.string().max(10),
+              ticketId: z.string().length(10),
             }),
           }),
         },
