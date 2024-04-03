@@ -8,6 +8,8 @@ export async function getAttendeeBadge(app: FastifyInstance) {
     "/attendees/:ticketId/badge",
     {
       schema: {
+        summary: "Get an attendee badge",
+        tags: ["attendees"],
         params: z.object({
           ticketId: z.string().length(10),
         }),

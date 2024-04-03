@@ -4,11 +4,16 @@
   "description": "Backend for Pass.in application",
   "main": "index.js",
   "scripts": {
-    "dev": "tsx watch --env-file .env src/server.ts"
+    "dev": "npm run migration:create && tsx watch --env-file .env src/server.ts",
+    "migration:create": "prisma migrate dev",
+    "prisma:studio": "prisma studio"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
+  },
   "devDependencies": {
     "@types/node": "^20.12.2",
     "prisma": "^5.11.0",
@@ -16,6 +21,8 @@
     "typescript": "^5.4.3"
   },
   "dependencies": {
+    "@fastify/swagger": "^8.14.0",
+    "@fastify/swagger-ui": "^3.0.0",
     "@prisma/client": "^5.11.0",
     "fastify": "^4.26.2",
     "fastify-type-provider-zod": "^1.1.9",
