@@ -1,4 +1,4 @@
-const { customAlphabet } = require("nanoid");
+import { customAlphabet } from "nanoid";
 
 const alphabet: string = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 
