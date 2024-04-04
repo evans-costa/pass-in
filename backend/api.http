@@ -4,20 +4,21 @@ Content-Type: application/json
 {
   "title": "Another Summit",
   "details": "Evento de programação",
-  "maximumAttendees": 5
+  "maximumAttendees": 10
 }
 
 ###
+
 POST http://localhost:3333/events/95564656-4ee8-4b0d-b02c-0b08284c1cb6/attendees
 Content-Type: application/json
 
 {
-  "name": "Evandro Costa",
-  "email": "evandro@email.com"
+  "name": "John Doo",
+  "email": "john@email.com"
 }
 
 ###
-GET http://localhost:3333/events/95564656-4ee8-4b0d-b02c-0b08284c1cb6
+GET http://localhost:3333/events/bfa619f2-e367-4190-8e12-e19b19a5ab0c
 
 ###
 GET http://localhost:3333/attendees/5zQzzdDN4j/badge
@@ -26,4 +27,4 @@ GET http://localhost:3333/attendees/5zQzzdDN4j/badge
 GET http://localhost:3333/attendees/5zQzzdDN4j/check-in
 
 ###
-GET http://localhost:3333/events/95564656-4ee8-4b0d-b02c-0b08284c1cb6/attendees?query=evandro
+GET http://localhost:3333/events/bfa619f2-e367-4190-8e12-e19b19a5ab0c/attendees?query=john
