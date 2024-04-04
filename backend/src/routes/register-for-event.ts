@@ -3,6 +3,7 @@ import { ZodTypeProvider } from "fastify-type-provider-zod";
 import { z } from "zod";
 import { prisma } from "../lib/prisma";
 import { generateNanoId } from "../utils/generate-nanoid";
+import { BadRequest } from "../_errors";
 
 export async function registerForEvent(app: FastifyInstance) {
   app.withTypeProvider<ZodTypeProvider>().post(
@@ -42,7 +43,7 @@ export async function registerForEvent(app: FastifyInstance) {
       });
 
       if (attendeeFromEmail !== null) {
-        throw new Error("This email is already registered for this event");
+        throw new BadRequest("This email is already registered for this event");
       }
 
       const [event, amountOfAttendeesForEvent] = await Promise.all([
@@ -60,7 +61,7 @@ export async function registerForEvent(app: FastifyInstance) {
       ]);
 
       if (event?.maximumAttendees && amountOfAttendeesForEvent > event?.maximumAttendees) {
-        throw new Error("The maximum attendees for this event is already reached.");
+        throw new BadRequest("The maximum attendees for this event is already reached.");
       }
 
       const ticketId = generateNanoId();
