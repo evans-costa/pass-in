@@ -21,10 +21,10 @@ Content-Type: application/json
 GET http://localhost:3333/events/bfa619f2-e367-4190-8e12-e19b19a5ab0c
 
 ###
-GET http://localhost:3333/attendees/5zQzzdDN4j/badge
+GET http://localhost:3333/attendees/9eqmSf_9eqmSf_NkbNkb/badge
 
 ###
-GET http://localhost:3333/attendees/5zQzzdDN4j/check-in
+GET http://localhost:3333/attendees/9eqmSf_Nkb/check-in
 
 ###
-GET http://localhost:3333/events/bfa619f2-e367-4190-8e12-e19b19a5ab0c/attendees?query=john
+GET http://localhost:3333/events/bfa619f2-e367-4190-8e12-e19b19a5ab0c/attendees?query=&pageIndex=
