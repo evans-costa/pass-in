@@ -1,4 +1,5 @@
 import fastify from "fastify";
+import fastifyCors from "@fastify/cors";
 import fastifySwagger from "@fastify/swagger";
 import fastifySwaggerUi from "@fastify/swagger-ui";
 import {
@@ -13,8 +14,13 @@ import { checkIn } from "./routes/check-ins";
 import { getEvent } from "./routes/get-event";
 import { getEventAttendees } from "./routes/get-event-attendees";
 import { getAttendeeBadge } from "./routes/get-attendee-badge";
+import { errorHandler } from "./error-handler";
 
 export const app = fastify();
+
+app.register(fastifyCors, {
+  origin: "*",
+});
 
 app.register(fastifySwagger, {
   swagger: {
@@ -44,6 +50,8 @@ app.register(getEvent);
 app.register(getEventAttendees);
 app.register(getAttendeeBadge);
 
-app.listen({ port: 3333 }).then(() => {
+app.setErrorHandler(errorHandler);
+
+app.listen({ port: 3333, host: "0.0.0.0" }).then(() => {
   console.log("Server running on port 3333");
 });
