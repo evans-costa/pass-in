@@ -1,17 +1,42 @@
 import {
   ChevronRight,
+  ChevronLeft,
   ChevronsLeft,
   ChevronsRight,
   MoreHorizontal,
   Search,
 } from "lucide-react";
+
 import { IconButton } from "./IconButton";
 import { Table } from "./Table/Table";
 import { TableHeader } from "./Table/TableHeader";
 import { TableCell } from "./Table/TableCell";
 import { TableRow } from "./Table/TableRow";
+import { useState } from "react";
+
+import { attendees } from "../mock/attendees";
 
 export function AttendeeList() {
+  const [page, setPage] = useState(1);
+
+  const totalPages = Math.ceil(attendees.length / 10);
+
+  function goToNextPage() {
+    return page === totalPages ? setPage(totalPages) : setPage(page + 1);
+  }
+
+  function goToPreviousPage() {
+    return page === 1 ? setPage(1) : setPage(page - 1);
+  }
+
+  function goToFirstPage() {
+    return setPage(1);
+  }
+
+  function goToLastPage() {
+    return setPage(totalPages);
+  }
+
   return (
     <div className="flex flex-col gap-4">
       <div className="flex items-center gap-3 ">
@@ -56,7 +81,7 @@ export function AttendeeList() {
           </TableRow>
         </thead>
         <tbody>
-          {Array.from({ length: 8 }).map((_, i) => {
+          {attendees.slice((page - 1) * 10, page * 10).map((_, i) => {
             return (
               <TableRow key={i}>
                 <TableCell className="py-3 px-4 text-sm text-zinc-300">
@@ -97,26 +122,34 @@ export function AttendeeList() {
               className="py-3 px-2.5 text-sm text-zinc-300"
               colSpan={3}
             >
-              Mostrando 10 de 120 itens
+              Mostrando 10 de {attendees.length} itens
             </TableCell>
             <TableCell
               className="py-3 px-2.5 text-sm text-zinc-300 text-right"
               colSpan={3}
             >
               <div className="flex items-center justify-end gap-8">
-                <span>Página 1 de 12</span>
+                <span>
+                  Página {page} de {totalPages}
+                </span>
                 <div className="flex gap-1.5">
-                  <IconButton>
+                  <IconButton onClick={goToFirstPage} disabled={page === 1}>
                     <ChevronsLeft className="size-4" />
                   </IconButton>
-                  <IconButton>
-                    <ChevronsLeft className="size-4" />
+                  <IconButton onClick={goToPreviousPage} disabled={page === 1}>
+                    <ChevronLeft className="size-4" />
                   </IconButton>
-                  <IconButton>
-                    <ChevronsRight className="size-4" />
-                  </IconButton>
-                  <IconButton>
+                  <IconButton
+                    onClick={goToNextPage}
+                    disabled={page === totalPages}
+                  >
                     <ChevronRight className="size-4" />
+                  </IconButton>
+                  <IconButton
+                    onClick={goToLastPage}
+                    disabled={page === totalPages}
+                  >
+                    <ChevronsRight className="size-4" />
                   </IconButton>
                 </div>
               </div>
