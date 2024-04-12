@@ -1,3 +1,5 @@
+import { ChangeEvent, useEffect, useState } from "react";
+
 import {
   ChevronRight,
   ChevronLeft,
@@ -12,29 +14,97 @@ import { Table } from "./Table/Table";
 import { TableHeader } from "./Table/TableHeader";
 import { TableCell } from "./Table/TableCell";
 import { TableRow } from "./Table/TableRow";
-import { useState } from "react";
 
-import { attendees } from "../mock/attendees";
+interface Attendee {
+  id: string;
+  name: string;
+  email: string;
+  createdAt: string;
+  checkedInAt: string | null;
+}
 
 export function AttendeeList() {
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useState(() => {
+    const url = new URL(window.location.toString());
 
-  const totalPages = Math.ceil(attendees.length / 10);
+    if (url.searchParams.has("page")) {
+      return Number(url.searchParams.get("page"));
+    }
+    return 1;
+  });
+
+  const [search, setSearch] = useState(() => {
+    const url = new URL(window.location.toString());
+
+    if (url.searchParams.has("search")) {
+      return url.searchParams.get("search") ?? "";
+    }
+    return "";
+  });
+
+  const [attendees, setAttendees] = useState<Attendee[]>([]);
+  const [total, setTotal] = useState(0);
+
+  const totalPages = Math.ceil(total / 10);
+
+  useEffect(() => {
+    const url = new URL(
+      "http://localhost:3333/events/bfa619f2-e367-4190-8e12-e19b19a5ab0c/attendees"
+    );
+
+    url.searchParams.set("pageIndex", String(page - 1));
+
+    if (search.length > 0) {
+      url.searchParams.set("query", search);
+    }
+
+    fetch(url)
+      .then((response) => response.json())
+      .then((data) => {
+        setAttendees(data.attendees);
+        setTotal(data.total);
+      });
+  }, [page, search]);
+
+  function setCurrentPage(page: number) {
+    const url = new URL(window.location.toString());
+
+    url.searchParams.set("page", String(page));
+
+    window.history.pushState({}, "", url);
+
+    setPage(page);
+  }
+
+  function setCurrentSearch(search: string) {
+    const url = new URL(window.location.toString());
+
+    url.searchParams.set("search", search);
+
+    window.history.pushState({}, "", url);
+
+    setSearch(search);
+  }
 
   function goToNextPage() {
-    return page === totalPages ? setPage(totalPages) : setPage(page + 1);
+    setCurrentPage(page + 1);
   }
 
   function goToPreviousPage() {
-    return page === 1 ? setPage(1) : setPage(page - 1);
+    setCurrentPage(page - 1);
   }
 
   function goToFirstPage() {
-    return setPage(1);
+    setCurrentPage(1);
   }
 
   function goToLastPage() {
-    return setPage(totalPages);
+    setCurrentPage(totalPages);
+  }
+
+  function onSearchInputChange(event: ChangeEvent<HTMLInputElement>) {
+    setCurrentSearch(event.target.value);
+    setCurrentPage(1);
   }
 
   return (
@@ -44,6 +114,8 @@ export function AttendeeList() {
         <div className="w-72 px-3 py-1.5 border border-white/10 bg-transparent rounded-lg text-sm flex items-center gap-3">
           <Search className="size-4 text-emerald-300" />
           <input
+            onChange={onSearchInputChange}
+            value={search}
             type="search"
             className="bg-transparent p-0.5 flex-1 border-none focus:ring-0 placeholder:text-zinc-300 text-sm"
             placeholder="Buscar participante..."
@@ -81,9 +153,9 @@ export function AttendeeList() {
           </TableRow>
         </thead>
         <tbody>
-          {attendees.slice((page - 1) * 10, page * 10).map((_, i) => {
+          {attendees.map((attendee, id) => {
             return (
-              <TableRow key={i}>
+              <TableRow key={id}>
                 <TableCell className="py-3 px-4 text-sm text-zinc-300">
                   <input
                     className="size-4 bg-black/20 border border-white/10 rounded text-[#F48F56]"
@@ -91,21 +163,23 @@ export function AttendeeList() {
                   />
                 </TableCell>
                 <TableCell className="py-3 px-4 text-sm text-zinc-300">
-                  12344
+                  {attendee.id}
                 </TableCell>
                 <TableCell className="py-3 px-4 text-sm text-zinc-300">
                   <div className="flex flex-col gap-1">
                     <span className="font-semibold text-white">
-                      Evandro Costa
+                      {attendee.name}
                     </span>
-                    <span>evandro@email.com</span>
+                    <span>{attendee.email}</span>
                   </div>
                 </TableCell>
                 <TableCell className="py-3 px-4 text-sm text-zinc-300">
-                  7 dias atrás
+                  {attendee.createdAt}
                 </TableCell>
                 <TableCell className="py-3 px-4 text-sm text-zinc-300">
-                  3 dias atrás
+                  {attendee.checkedInAt ?? (
+                    <span className="text-zinc-400">Não fez check-in</span>
+                  )}
                 </TableCell>
                 <TableCell className="py-3 px-4 text-sm text-zinc-300">
                   <IconButton transparent>
@@ -122,7 +196,7 @@ export function AttendeeList() {
               className="py-3 px-2.5 text-sm text-zinc-300"
               colSpan={3}
             >
-              Mostrando 10 de {attendees.length} itens
+              Mostrando {attendees.length} de {total} itens
             </TableCell>
             <TableCell
               className="py-3 px-2.5 text-sm text-zinc-300 text-right"
